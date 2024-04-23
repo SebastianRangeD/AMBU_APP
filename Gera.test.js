@@ -1,6 +1,4 @@
-const filterTickets = require('./filterTickets');
-const selectTicket = require('./selectTicket');
-const endTicket = require('./endTicket');
+const { filterTickets, selectTicket, endTicket } = require('./Gera');
 
 // filterTickets test
 test('Encontrar el ticket con el UID: 1ui98-1234io-923893', () => {
