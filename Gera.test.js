@@ -1,4 +1,6 @@
-const { filterTickets, selectTicket, endTicket } = require('./Gera');
+const selectTicket = require('./Gera.js'),
+    filterTickets = require('./Gera.js'),
+    endTicket = require('./Gera.js');
 
 // filterTickets test
 test('Encontrar el ticket con el UID: 1ui98-1234io-923893', () => {
