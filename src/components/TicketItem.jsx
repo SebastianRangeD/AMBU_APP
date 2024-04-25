@@ -21,10 +21,10 @@ const TicketItem = ({ uid, area, categorie, comments, evidence, handlePress }) =
                     <Text style={styles.subTitle}>
                         {uid}
                     </Text>
-                    <Text style={styles.title}>
+                    <Text style={styles.title} numberOfLines={1}>
                         {`${area} - ${categorie}`}
                     </Text>
-                    <Text style={styles.comments}>
+                    <Text style={styles.comments} numberOfLines={2}>
                         {comments}
                     </Text>
                 </View>
@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         paddingVertical: 10,
         paddingHorizontal: 20,
-        fontFamily: 'Montserrat_400Regular'
     },
     active: {
         borderBottomColor: '#3DA891',
@@ -63,10 +62,13 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 16,
-        fontFamily: 'Montserrat_600SemiBold'
+        fontFamily: 'Montserrat_600SemiBold',
+        paddingEnd: 110,
     },
     comments: {
         fontSize: 12,
+        fontFamily: 'Montserrat_400Regular',
+        paddingEnd: 110,
     }
 });
 

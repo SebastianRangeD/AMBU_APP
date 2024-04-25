@@ -57,23 +57,25 @@ contempla que se pueden filtrar por ambos campos.
 RECOMENDACION: Usar el metodo de array .filter().
 */
 const filterTickets = (_uid = '', _categorie = '') => {
-    if (!_uid && !_categorie) {
-        console.error('Debe proporcionar al menos un criterio de filtrado.');
-        return [];
-    }
+    return `${_uid} - ${_categorie}`;
 
-    // Filtra los tickets según los criterios proporcionados
-    return ticketsArray.filter(ticket => {
-        if (_uid && _categorie) {
-            return ticket.uid === _uid && ticket.categorie === _categorie;
-        }
-        else if (_uid) {
-            return ticket.uid === _uid;  
-        }
-        else if (_categorie) {
-            return ticket.categorie === _categorie;
-        }
-    });
+    // if (!_uid && !_categorie) {
+    //     console.error('Debe proporcionar al menos un criterio de filtrado.');
+    //     return [];
+    // }
+
+    // // Filtra los tickets según los criterios proporcionados
+    // console.log(ticketsArray.filter(({ uid, categorie }) => {
+    //     if (_uid && _categorie) {
+    //         return uid === _uid && categorie === _categorie;
+    //     }
+    //     else if (_uid) {
+    //         return uid === _uid;
+    //     }
+    //     else if (_categorie) {
+    //         return categorie === _categorie;
+    //     }
+    // }));
 }
 
 module.exports = filterTickets;
@@ -91,8 +93,8 @@ RECOMENDACION: Usar el metodo de array .find().
 const selectTicket = (_uid = '') => {
     if (!_uid) return;
 
-    let ticketSelected = {};
-    ticketSelected = ticketsArray.find(ticket => ticket.uid === _uid);
+    let ticketSelected = ticketsArray.find(({ uid }) => uid === _uid);
+    // console.log(ticketSelected);
     return ticketSelected;
 }
 
@@ -116,14 +118,14 @@ const endTicket = (_uid = '') => {
     const mes = String(endDate.getMonth() + 1).padStart(2, '0'); // Los meses comienzan desde 0, por eso sumamos 1
     const año = endDate.getFullYear();
 
-    if(ticketSelected){
+    if (ticketSelected) {
         ticket.status = 'Finalizado';
         const fechaString = `${dia}-${mes}-${año}`;
         ticket.date.end = fechaString;
-        console.log('Estado del ticket editado:', ticket);
+        // console.log('Estado del ticket editado:', ticket);
         return true;
-    }else{
-        console.log('No se encontró ningún ticket con el UID especificado.');
+    } else {
+        // console.log('No se encontró ningún ticket con el UID especificado.');
         return false;
     }
 }

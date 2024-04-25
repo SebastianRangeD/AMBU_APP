@@ -6,7 +6,7 @@ import TopBar from '../components/TopBar';
 
 export default function Home() {
     return (
-        <View style={{ flexGrow: 1, backgroundColor: '#fff', marginBottom: 195 }}>
+        <View style={{ flexGrow: 1, backgroundColor: '#fff', paddingBottom: 195 }}>
             <TopBar searchActive={true} />
 
             <TicketsList />

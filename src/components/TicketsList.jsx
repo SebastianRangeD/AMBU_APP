@@ -22,11 +22,9 @@ const TicketsList = () => {
     }
 
     const selectTicket = (_uid = '') => {
-        let ticketSelected = {};
-
         if (!_uid) return;
 
-        ticketSelected = ticketsArray.find(({ uid }) => uid === _uid);
+        let ticketSelected = ticketsArray.find(({ uid }) => uid === _uid);
         setActiveTicket({ ...ticketSelected });
         setModalTicket(true);
     }
@@ -40,7 +38,7 @@ const TicketsList = () => {
                 }>
             </FlatList >
 
-            <TicketModal isVisible={modalTicket} handleModal={setModalTicket} />
+            <TicketModal isVisible={modalTicket} handleModal={setModalTicket} {...activeTicket} />
         </View>
 
     );
