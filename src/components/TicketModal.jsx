@@ -1,28 +1,21 @@
 import React from 'react';
 import Constants from 'expo-constants';
-import { Modal, StyleSheet, Text, TouchableHighlight, View, Image } from 'react-native';
+import { Modal, StyleSheet, TouchableHighlight, View } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
+import Header from './Ticket/Header';
+import Description from './Ticket/Description';
 
-const TicketModal = ({ isVisible, handleModal, uid = '', area = '', categorie = '', evidence = [] }) => {
+const TicketModal = ({ isVisible, handleModal, uid = '', area = '', categorie = '', evidence = [], status = '', comments = '' }) => {
     return (
         <Modal animationType='slide' transparent={true} visible={isVisible}>
             <View style={styles.modal}>
-                <TouchableHighlight activeOpacity={0.9} underlayColor={'#000'} onPress={() => handleModal(false)}>
-                    <FontAwesome6 name="bell" size={20} color="#000" />
+                <TouchableHighlight activeOpacity={1} underlayColor={'rgba(0,0,0,0)'} onPress={() => handleModal(false)}>
+                    <FontAwesome6 name="times-circle" style={styles.closeBtn} />
                 </TouchableHighlight>
 
-                <View style={styles.container}>
-                    <Image source={{ uri: evidence[0] }} style={styles.icon} />
+                <Header uid={uid} area={area} categorie={categorie} evidence={evidence} status={status} />
 
-                    <View style={{ maxWidth: '67%' }}>
-                        <Text style={styles.subTitle}>
-                            {uid}
-                        </Text>
-                        <Text style={styles.title} numberOfLines={2}>
-                            {`${area} - ${categorie}`}
-                        </Text>
-                    </View>
-                </View>
+                <Description comments={comments} />
             </View>
         </Modal>
     );
@@ -38,38 +31,16 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         paddingVertical: 30,
         paddingHorizontal: 20,
-        alignItems: 'center',
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         shadowOpacity: 0.5,
         elevation: 5,
     },
-    container: {
-        width: '100%',
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 15,
-    },
-    icon: {
-        width: '100%',
-        maxWidth: '30%',
-        aspectRatio: 1,
-        borderRadius: 500,
-        borderColor: '#3DA891',
-        borderWidth: 1,
-    },
-    subTitle: {
-        fontSize: 12,
-        color: '#3DA891',
-        textTransform: "uppercase",
-        fontFamily: 'Montserrat_800ExtraBold'
-    },
-    title: {
-        fontSize: 16,
-        fontFamily: 'Montserrat_600SemiBold',
-    },
     closeBtn: {
-
-    }
+        fontSize: 30,
+        marginStart: 'auto',
+        color: '#dc3545',
+        marginBottom: 15,
+    },
 });
 
 export default TicketModal;
