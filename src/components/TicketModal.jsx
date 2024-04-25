@@ -1,21 +1,29 @@
 import React from 'react';
 import Constants from 'expo-constants';
-import { Modal, StyleSheet, TouchableHighlight, View } from 'react-native';
+import { Modal, ScrollView, StyleSheet, TouchableHighlight, View } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
 import Header from './Ticket/Header';
 import Description from './Ticket/Description';
+import Gallery from './Ticket/Gallery';
+import Location from './Ticket/Location';
 
-const TicketModal = ({ isVisible, handleModal, uid = '', area = '', categorie = '', evidence = [], status = '', comments = '' }) => {
+const TicketModal = ({ isVisible, handleModal, uid = '', area = '', categorie = '', evidence = [], status = '', comments = '', coordinates = { lat: '0', lng: '0' } }) => {
     return (
         <Modal animationType='slide' transparent={true} visible={isVisible}>
             <View style={styles.modal}>
-                <TouchableHighlight activeOpacity={1} underlayColor={'rgba(0,0,0,0)'} onPress={() => handleModal(false)}>
-                    <FontAwesome6 name="times-circle" style={styles.closeBtn} />
-                </TouchableHighlight>
+                <ScrollView>
+                    <TouchableHighlight activeOpacity={1} underlayColor={'rgba(0,0,0,0)'} onPress={() => handleModal(false)}>
+                        <FontAwesome6 name="times-circle" style={styles.closeBtn} />
+                    </TouchableHighlight>
 
-                <Header uid={uid} area={area} categorie={categorie} evidence={evidence} status={status} />
+                    <Header uid={uid} area={area} categorie={categorie} evidence={evidence} status={status} />
 
-                <Description comments={comments} />
+                    <Description comments={comments} />
+
+                    <Gallery evidence={evidence} />
+
+                    <Location coordinates={coordinates} />
+                </ScrollView>
             </View>
         </Modal>
     );

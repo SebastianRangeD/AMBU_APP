@@ -20,5 +20,7 @@ const ticket = {
 
 // Arreglo de TICKETS
 export default [
-    ticket, { ...ticket, uid: '1ui98-1234io-923893', categorie: 'Procreacion', comments: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque autem ad rerum sint assumenda modi consectetur est exercitationem facilis commodi explicabo deserunt necessitatibus quo ipsa numquam quod maxime, nisi excepturi!', status: 'Seguimiento' }, { ...ticket, uid: '1ui98-1234io-108276', categorie: 'Especie desplazada de su habitat natural endemica', status: 'Concluido' }, { ...ticket, uid: '1ui98-1234io-923891' }, { ...ticket, uid: '1ui98-1234io-923892' }, { ...ticket, uid: '1ui98-1234io-923894' }, { ...ticket, uid: '1ui98-1234io-923895' }, { ...ticket, uid: '1ui98-1234io-923896' }, { ...ticket, uid: '1ui98-1234io-923897' }, { ...ticket, uid: '1ui98-1234io-923898' },
+    ticket, {
+        ...ticket, uid: '1ui98-1234io-923893', categorie: 'Procreacion', comments: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque autem ad rerum sint assumenda modi consectetur est exercitationem facilis commodi explicabo deserunt necessitatibus quo ipsa numquam quod maxime, nisi excepturi!', status: 'Seguimiento', evidence: ['https://dummyimage.com/600x600/fafafa/000000', 'https://dummyimage.com/800x800/fafafa/000000', 'https://dummyimage.com/1200x600/fafafa/000000'],
+    }, { ...ticket, uid: '1ui98-1234io-108276', categorie: 'Especie desplazada de su habitat natural endemica', status: 'Concluido' }, { ...ticket, uid: '1ui98-1234io-923891' }, { ...ticket, uid: '1ui98-1234io-923892' }, { ...ticket, uid: '1ui98-1234io-923894' }, { ...ticket, uid: '1ui98-1234io-923895' }, { ...ticket, uid: '1ui98-1234io-923896' }, { ...ticket, uid: '1ui98-1234io-923897' }, { ...ticket, uid: '1ui98-1234io-923898' },
 ]
