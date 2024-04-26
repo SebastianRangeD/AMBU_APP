@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 16,
         fontFamily: 'Montserrat_600SemiBold',
+        color: '#333333',
         paddingEnd: 110,
     },
     comments: {

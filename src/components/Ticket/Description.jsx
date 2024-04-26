@@ -8,9 +8,9 @@ const Description = ({ comments }) => {
                 Descripción de la incidencia
             </Text>
 
-
-            <View style={[styles.globe, styles.bgGrey]}>
+            <View style={[styles.globe, styles.bgGrey, { marginStart: 10 }]}>
                 <View style={[styles.globeDecorator, styles.bgGrey]}></View>
+
                 <Text style={styles.textRegular}>
                     {comments}
                 </Text>

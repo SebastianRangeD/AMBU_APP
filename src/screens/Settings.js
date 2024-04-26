@@ -1,16 +1,14 @@
 import React from 'react'
-import Constants from 'expo-constants';
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import TopBar from '../components/TopBar';
+import UserSettings from '../components/UserSettings';
 
 export default function Settings() {
     return (
-        <View style={{ flexGrow: 1, backgroundColor: '#fff' }}>
+        <View style={{ flexGrow: 1, backgroundColor: '#fff', paddingBottom: 195 }}>
             <TopBar />
 
-            <Text>
-                Settings
-            </Text>
+            <UserSettings />
         </View>
     )
 }
