@@ -57,25 +57,7 @@ contempla que se pueden filtrar por ambos campos.
 RECOMENDACION: Usar el metodo de array .filter().
 */
 const filterTickets = (_uid = '', _categorie = '') => {
-    return `${_uid} - ${_categorie}`;
-
-    // if (!_uid && !_categorie) {
-    //     console.error('Debe proporcionar al menos un criterio de filtrado.');
-    //     return [];
-    // }
-
-    // // Filtra los tickets según los criterios proporcionados
-    // console.log(ticketsArray.filter(({ uid, categorie }) => {
-    //     if (_uid && _categorie) {
-    //         return uid === _uid && categorie === _categorie;
-    //     }
-    //     else if (_uid) {
-    //         return uid === _uid;
-    //     }
-    //     else if (_categorie) {
-    //         return categorie === _categorie;
-    //     }
-    // }));
+    return ticketsArray.filter(t => (_uid === '' || t.uid === _uid) && (_categorie === '' || t.categorie === _categorie));
 }
 
 module.exports = filterTickets;
@@ -114,8 +96,8 @@ STATUS a "Finalizado" y el campo date.end con la fecha de finalizacion en format
 const endTicket = (_uid = '') => {
     const ticketSelected = selectTicket(_uid);
     const endDate = new Date();
-    const dia = String(endDate.getDate()).padStart(2, '0'); // Agregamos un 0 delante si el día es de un solo dígito
-    const mes = String(endDate.getMonth() + 1).padStart(2, '0'); // Los meses comienzan desde 0, por eso sumamos 1
+    const dia = String(endDate.getDate()).padStart(2, '0'); 
+    const mes = String(endDate.getMonth() + 1).padStart(2, '0'); 
     const año = endDate.getFullYear();
 
     if (ticketSelected) {
