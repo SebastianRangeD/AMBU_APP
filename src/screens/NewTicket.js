@@ -9,7 +9,7 @@ export default function NewTicket() {
             <TopBar />
 
             <Text>
-                NewTicket
+                New ticket
             </Text>
         </View>
     )
