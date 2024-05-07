@@ -2,25 +2,10 @@ import React, { useState } from 'react';
 import Header from './User/Header';
 import { StyleSheet, Text, TouchableHighlight, View, Modal, Alert, TextInput, Switch } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Camera} from 'expo-camera'
-import * as Location from 'expo-location'
-
-/*
-ACTIVIDAD A COMPLETAR:
-
-Parte 1: Crear el funcionamiento para que al presionar "Cambiar contraseña" se abra un modal
-con dos inputs para ingresar la nueva contraseña y confirmar contraseña, y al final un botón para
-realizar el cambio de contraseña. Si el cambio de contraseña es exitoso (coinciden ambas contraseñas)
-se cierra el modal con alerta de éxito, si no, se notifica que las contraseñas no coinciden.
-
-Parte 2: Investigar como puedes hacer que al presionar la opción "Gestionar permisos" en el teléfono se te
-solicite acceso a la cámara y a la ubicación, es decir, el típico mensaje de "Permitir Acceso a la cámara, si, no"
-y ese rollo.
-
-Parte 3: Al dar click en el botón de cerrar sesión, que acceda al AsyncStorage y limpie el token de sesion y los datos
-de usuario te dejo este link de referencia para leer un poco que es el AsyncStorage:
-https://medium.com/@khriztianmoreno/dominando-el-almacenamiento-local-en-react-native-mejores-pr%C3%A1cticas-y-estrategias-de-611548cbb772
- */
+import { FontAwesome6 } from '@expo/vector-icons';
+import { Camera } from 'expo-camera';
+import * as Location from 'expo-location';
+import Constants from 'expo-constants';
 
 // Hardcoded user
 const user = {
@@ -33,15 +18,15 @@ const user = {
 
 const token = 'oi98-09pa-bhj1-oq10';
 
-const UserSettings = () => {
-//Changes password
-const [newPassword, setNewPassword] = useState('');
-const [confirmPassword, setConfirmPassword] = useState('');
-const [modalVisiblePassword, setModalVisiblePassword] = useState(false);
-//Camera and Location Permissions
-const [modalVisiblePermissions, setModalVisiblePermissions] = useState(false);
-const [cameraEnabled, setCameraEnabled] = useState(false);
-const [locationEnabled, setLocationEnabled] = useState(false);
+const UserSettings = ({ navigation }) => {
+    //Changes password
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [modalVisiblePassword, setModalVisiblePassword] = useState(false);
+    //Camera and Location Permissions
+    const [modalVisiblePermissions, setModalVisiblePermissions] = useState(false);
+    const [cameraEnabled, setCameraEnabled] = useState(false);
+    const [locationEnabled, setLocationEnabled] = useState(false);
 
     /* 
         Esta funcion NO LA BORRES es solo para setear el token hardcodeado en cuanto se entra a la vista
@@ -55,134 +40,169 @@ const [locationEnabled, setLocationEnabled] = useState(false);
         }
     })();
 
-    // Funcion para cerrar sesión, es asincrona porque el asyncStorage lo es
     const logout = async () => {
         try {
             await AsyncStorage.removeItem('token');
             await AsyncStorage.removeItem('user');
+            navigation.navigate('Login');
         } catch (error) {
             console.error('Error al cerrar sesion', error);
         }
     }
 
     const changePassword = () => {
-        if (newPassword.trim() !== '' &&  confirmPassword.trim() !== ''){
-            if(newPassword === confirmPassword){
+        if (newPassword.trim() !== '' && confirmPassword.trim() !== '') {
+            if (newPassword === confirmPassword) {
                 Alert.alert('Cambio de Contraseña exitoso');
                 setNewPassword('');
                 setConfirmPassword('');
                 setModalVisiblePassword(false);
-            }else{
+            } else {
                 Alert.alert('Las contraseñas no coinciden', 'Vuelva a intentarlo');
             }
-        }else if(newPassword.trim() === ''){
+        } else if (newPassword.trim() === '') {
             Alert.alert('Ingresa la nueva contraseña');
-        }else if(confirmPassword.trim() === ''){
+        } else if (confirmPassword.trim() === '') {
             Alert.alert('Ingresar la confirmación de la contraseña');
-        }else{
+        } else {
             Alert.alert('Debes llenar los campos anteriores');
         }
     };
 
     const cameraPermission = async () => {
-        if(!cameraEnabled){
-            const {status} = await Camera.requestCameraPermissionsAsync();
-            if(status === 'granted'){
+        if (!cameraEnabled) {
+            const { status } = await Camera.requestCameraPermissionsAsync();
+            if (status === 'granted') {
                 setCameraEnabled(true);
             }
-        }else{
+        } else {
             setCameraEnabled(false);
-            await Camera.requestCameraPermissionsAsync({access: 'denied'});
+            await Camera.requestCameraPermissionsAsync({ access: 'denied' });
         }
     };
 
     const locationPermission = async () => {
-        if(!locationEnabled){
-            const {status} = await Location.requestForegroundPermissionsAsync();
-            if(status === 'granted'){
+        if (!locationEnabled) {
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status === 'granted') {
                 setLocationEnabled(true);
             }
-        }else{
+        } else {
             setLocationEnabled(false);
-            await Location.requestForegroundPermissionsAsync({status: 'denied'});
+            await Location.requestForegroundPermissionsAsync({ status: 'denied' });
         }
-    } 
+    }
 
     return (
         <View style={styles.view}>
             <Header {...user} />
             <View style={styles.container}>
+
                 {/* Change Password */}
                 <TouchableHighlight onPress={() => setModalVisiblePassword(true)} style={styles.actionBtn} activeOpacity={1} underlayColor={'rgba(0, 0, 0, 0.1)'}>
-                    <Text style={styles.btnText}>
-                        Cambiar contraseña
-                    </Text>
+                    <View style={styles.flexCenter}>
+                        <FontAwesome6 name="lock" size={16} color="#333" />
+                        <Text style={styles.btnText}>
+                            Cambiar contraseña
+                        </Text>
+                    </View>
                 </TouchableHighlight>
+
                 <Modal animationType='slide' transparent={true} visible={modalVisiblePassword} onRequestClose={() => setModalVisiblePassword(false)}>
-                   <View style={styles.containerModal}>
-                        <View style={styles.modalView}>
-                            <Text style={styles.modalText}>Cambiar Contraseña</Text>
-                            <TextInput style={styles.modalInputText} placeholder="Nueva Contraseña" value={newPassword} onChangeText={text => setNewPassword(text)} secureTextEntry={true} />
-                            <TextInput style={styles.modalInputText} placeholder="Confirmar Contraseña" value={confirmPassword} onChangeText={text => setConfirmPassword(text)} secureTextEntry={true} />
-                            <TouchableHighlight style={[styles.modalBtn, styles.modalBtnComfirm]} onPress={changePassword}>
-                                <Text style={styles.modalBtnText}>
-                                    Cambiar contraseña
-                                </Text>
-                            </TouchableHighlight>
-                            <TouchableHighlight style={[styles.modalBtn, styles.modalBtnCancel]} onPress={() => [setNewPassword(''), setConfirmPassword(''), setModalVisiblePassword(false)]}>
-                                <Text style={styles.modalBtnText}>
-                                    Cancelar
-                                </Text>
-                            </TouchableHighlight>
+                    <View style={styles.containerModal}>
+                        <TouchableHighlight activeOpacity={1} underlayColor={'rgba(0,0,0,0)'} onPress={() => [setNewPassword(''), setConfirmPassword(''), setModalVisiblePassword(false)]}>
+                            <FontAwesome6 name="times-circle" style={styles.closeBtn} />
+                        </TouchableHighlight>
+
+                        <Text style={styles.title}>
+                            Cambiar Contraseña
+                        </Text>
+
+                        <Text style={styles.subTitle}>
+                            Nueva Contraseña
+                        </Text>
+                        <View style={[styles.flexCenter, { marginBottom: 24 }]}>
+                            <FontAwesome6 name="lock" size={16} color="#333" />
+                            <TextInput style={styles.modalInputText} value={newPassword} onChangeText={text => setNewPassword(text)} secureTextEntry={true} />
                         </View>
-                    </View> 
+
+                        <Text style={styles.subTitle}>
+                            Confirmar Contraseña
+                        </Text>
+                        <View style={[styles.flexCenter, { marginBottom: 24 }]}>
+                            <FontAwesome6 name="lock" size={16} color="#333" />
+                            <TextInput style={styles.modalInputText} value={confirmPassword} onChangeText={text => setConfirmPassword(text)} secureTextEntry={true} />
+                        </View>
+
+                        <TouchableHighlight style={[styles.modalBtn, styles.modalBtnComfirm]} onPress={changePassword}>
+                            <Text style={styles.modalBtnText}>
+                                Cambiar contraseña
+                            </Text>
+                        </TouchableHighlight>
+                    </View>
                 </Modal>
+
                 {/* Permissions */}
                 <TouchableHighlight onPress={() => setModalVisiblePermissions(true)} style={styles.actionBtn} activeOpacity={1} underlayColor={'rgba(0, 0, 0, 0.1)'}>
-                    <Text style={styles.btnText}>
-                        Gestionar permisos
-                    </Text>
+                    <View style={styles.flexCenter}>
+                        <FontAwesome6 name="key" size={16} color="#333" />
+                        <Text style={styles.btnText}>
+                            Gestionar permisos
+                        </Text>
+                    </View>
                 </TouchableHighlight>
+
                 <Modal animationType='slide' transparent={true} visible={modalVisiblePermissions} onRequestClose={() => setModalVisiblePermissions(false)}>
-                   <View style={styles.containerModal}>
-                        <View style={styles.modalView}>
-                            <Text style={styles.modalText}>Permisos</Text>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Switch
-                                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                                thumbColor={cameraEnabled ? "#f5dd4b" : "#f4f3f4"}
+                    <View style={styles.containerModal}>
+                        <TouchableHighlight activeOpacity={1} underlayColor={'rgba(0,0,0,0)'} onPress={() => setModalVisiblePermissions(false)}>
+                            <FontAwesome6 name="times-circle" style={styles.closeBtn} />
+                        </TouchableHighlight>
+
+                        <Text style={styles.title}>Permisos*</Text>
+
+                        <View style={styles.flexCenter}>
+                            <Switch
+                                trackColor={{ false: "#333333", true: "#3DA891" }}
+                                thumbColor={"#f4f3f4"}
                                 ios_backgroundColor="#3e3e3e"
                                 onValueChange={cameraPermission}
                                 value={cameraEnabled}
-                                />
-                                <Text>Solicitar Acceso a la Cámara</Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20 }}>
-                                <Switch
-                                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                                thumbColor={locationEnabled ? "#f5dd4b" : "#f4f3f4"}
-                                ios_backgroundColor="#3e3e3e"
+                            />
+                            <Text style={styles.subTitle}>Solicitar Acceso a la Cámara</Text>
+                        </View>
+
+                        <View style={[styles.flexCenter, { marginTop: 24, marginBottom: 48 }]}>
+                            <Switch
+                                trackColor={{ false: "#333333", true: "#3DA891" }}
+                                thumbColor={"#f4f3f4"}
+                                ios_backgroundColor="#333333"
                                 onValueChange={locationPermission}
                                 value={locationEnabled}
-                                />
-                                <Text>Solicitar Acceso a la Ubicación</Text>
-                            </View>
-                            <TouchableHighlight style={[styles.modalBtn, styles.modalBtnCancel]} onPress={() => setModalVisiblePermissions(false)}>
-                                <Text style={styles.modalBtnText}>
-                                    Cancelar
-                                </Text>
-                            </TouchableHighlight>
+                            />
+                            <Text style={styles.subTitle}>Solicitar Acceso a la Ubicación</Text>
                         </View>
-                    </View> 
+
+                        <Text style={styles.subTitle}>
+                            *Los permisos solicitados por la aplicación son para asegurar el correcto funcionamiento de las diferentes características que permiten adjuntar evidencia e información adicional al reporte de una incidencia.
+                        </Text>
+                    </View>
                 </Modal>
+
                 {/* Logout */}
                 <TouchableHighlight onPress={logout} style={[styles.actionBtn, styles.logoutBtn]} activeOpacity={1} underlayColor={'rgba(234, 134, 143, 0.5)'}>
-                    <Text style={styles.btnText}>
-                        Cerrar sesión
-                    </Text>
+                    <View style={styles.flexCenter}>
+                        <FontAwesome6 name="power-off" size={16} color="#D00000" />
+                        <Text style={styles.btnText}>
+                            Cerrar sesión
+                        </Text>
+                    </View>
                 </TouchableHighlight>
-            </View>
-        </View>
+            </View >
+
+            <Text style={styles.version}>
+                AMBU Track - v 0.0.1
+            </Text>
+        </View >
     );
 }
 
@@ -211,59 +231,65 @@ const styles = StyleSheet.create({
         fontFamily: 'Montserrat_600SemiBold',
     },
     containerModal: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        marginTop: 22,
-    },
-    modalView: {
-        margin: 20,
+        flexGrow: 1,
+        marginTop: Constants.statusBarHeight + 20,
         backgroundColor: 'white',
         borderRadius: 20,
-        padding: 35,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
+        padding: 20,
+        shadowColor: 'rgba(0, 0, 0, 0.5)',
+        shadowOpacity: 0.5,
         elevation: 5,
     },
-    modalBtn:{
-        width: 180,
-        marginTop: 5,
-        paddingVertical: 10,
-        borderRadius: 15,
-        elevation: 2,
+    closeBtn: {
+        fontSize: 30,
+        marginStart: 'auto',
+        color: '#dc3545',
+        marginVertical: 15,
     },
-    modalBtnComfirm:{
-        backgroundColor: 'blue',
+    title: {
+        fontSize: 18,
+        fontFamily: 'Montserrat_600SemiBold',
+        color: '#333333',
+        marginBottom: 32,
     },
-    modalBtnCancel:{
-        backgroundColor: 'red',
+    subTitle: {
+        fontSize: 16,
+        fontFamily: 'Montserrat_400Regular',
+        color: '#333333',
+        marginBottom: 4,
     },
-    modalBtnText:{
-        color: 'white',
-        fontWeight: 'bold',
-        textAlign: 'center'
+    modalBtn: {
+        borderRadius: 8,
+        padding: 15,
+        marginBottom: 50,
     },
-    modalInputText:{
-        width: 180,
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 15,
-        marginBottom: 10,
+    modalBtnText: {
+        color: '#fff',
+        fontSize: 16,
+        fontFamily: 'Montserrat_600SemiBold',
+        textAlign: 'center',
+        textTransform: 'uppercase',
+    },
+    modalBtnComfirm: {
+        backgroundColor: '#3DA891',
+    },
+    flexCenter: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    modalInputText: {
+        flexGrow: 1,
+        borderBottomWidth: 1,
+        borderBottomColor: '#333',
+        fontFamily: 'Montserrat_400Regular',
         padding: 10,
     },
-    modalText:{
-        color: 'black',
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 15,
-
+    version: {
+        fontFamily: 'Montserrat_600SemiBold',
+        color: 'rgba(0,0,0, 0.25)',
+        textAlign: 'center',
+        marginTop: 24,
     }
 });
 

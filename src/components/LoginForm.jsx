@@ -1,86 +1,173 @@
 import React, { useState } from 'react';
-import { TextInput, View, Text, Button, Alert, StyleSheet} from 'react-native';
-
-/*
-ACTIVIDAD A COMPLETAR:
-
-Parte 1: Con los componentes de react native crear un pequeño form de dos
-inputs de texto (Usuario y contraseña) y un botón (Iniciar sesión) para tener la estructura base del login.
-
-Parte 2: Utilizando los hooks correspondientes (Lo más probable es que sean useState o useRef).
-Hacer que esos hooks almacenen el valor del usuario y la contraseña cada que se modifique el
-contenido de los inputs.
-
-Parte 3: Al dar click en el botón de iniciar sesión, que compare las credenciales ingresadas por el usuario
-con las que te dejo hardcodeadas, en caso de coincidencia manda un alert con el mensaje ('Inicio de sesión 
-exitoso'), caso contrario, un alert con el mensaje (`Inicio de sesión fallido: ${Campo que no coincidió}`).
- */
-
+import Constants from 'expo-constants';
+import { TextInput, View, Text, Button, Alert, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import Logo from '../../assets/img/logo.png';
+import { FontAwesome6 } from '@expo/vector-icons';
+import { TouchableHighlight } from '@gorhom/bottom-sheet';
 
 const credentials = {
-    user: 'admin@ambu.mx',
-    password: 'Admin.2024!',
+    user: 'admin',
+    password: '123',
 };
 
-const LoginForm = () => {
+const Loading = ({ loading }) => {
+    if (!loading) return;
+
+    return (
+        <ActivityIndicator size={'large'} color={'#3DA891'} style={styles.loader} />
+    );
+}
+
+const LoginForm = ({ navigation }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState('');
 
     const alertLogin = () => {
-        if (username === credentials.user && password === credentials.password){
+        setLoading(true);
+
+        if (username === credentials.user && password === credentials.password) {
             Alert.alert('Inicio de sesion exitoso');
-        }else if(username !== credentials.user && password !== credentials.password){
+            navigation.navigate('Layout');
+        } else if (username !== credentials.user && password !== credentials.password) {
             Alert.alert('Inicio de sesion fallido: usuario y contraseña incorrectos');
-        }else if(username !== credentials.user){
+        } else if (username !== credentials.user) {
             Alert.alert('Inicio de sesion fallido: usuario incorrecto');
-        }else{
+        } else {
             Alert.alert('Inicio de sesion fallido: contraseña incorrecta');
         }
+
+        setTimeout(() => { // simulated timeout when consuming API
+            setLoading(false);
+        }, 1000);
+
+        setUsername('');
+        setPassword('');
     };
+
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Park Traiking</Text>
-            <TextInput 
-                placeholder='Usuario' 
-                style={styles.textInput} 
-                onChangeText={text => setUsername(text)}/>
-            <TextInput 
-                placeholder='Contraseña' 
-                style={styles.textInput} 
-                onChangeText={text => setPassword(text)} 
-                secureTextEntry={true}/>
-            <Button style={styles.button} title='Iniciar Sesion' onPress={alertLogin}/>
+            <View style={styles.decorator}></View>
+
+            <Loading loading={loading} />
+            {/* <ActivityIndicator size={'large'} color={'#3DA891'} style={styles.loader} /> */}
+
+
+            <Image source={Logo} style={styles.logo} />
+
+            <View style={styles.card}>
+                <Text style={styles.title}>
+                    Bienvenido(a)
+                </Text>
+
+                <View style={styles.flexCenter}>
+                    <FontAwesome6 name="user-large" size={20} color="#333" />
+                    <TextInput
+                        placeholder='Usuario'
+                        style={styles.textInput}
+                        value={username}
+                        onChangeText={text => setUsername(text)} />
+                </View>
+
+                <View style={styles.flexCenter}>
+                    <FontAwesome6 name="lock" size={20} color="#333" />
+                    <TextInput
+                        placeholder='Contraseña'
+                        style={styles.textInput}
+                        value={password}
+                        onChangeText={text => setPassword(text)}
+                        secureTextEntry={true} />
+                </View>
+
+                <TouchableHighlight onPress={alertLogin} style={styles.btnLogin} activeOpacity={1} underlayColor={'#DFE38B'}>
+                    <Text style={styles.btnText}>
+                        Iniciar Sesión
+                    </Text>
+                </TouchableHighlight>
+            </View>
+
+            <Text style={styles.version}>
+                AMBU Track - v 0.0.1
+            </Text>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container:{
+    container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
+        backgroundColor: '#FFF6E9',
+        padding: 20,
     },
-    title:{
-        fontSize: 65,
-        color: 'black',
-        fontWeight: 'bold',
+    card: {
+        width: '100%',
+        borderRadius: 40,
+        backgroundColor: 'white',
+        paddingHorizontal: 23,
+        paddingVertical: 32,
     },
-    textInput:{
-        padding:10,
-        paddingStart:30,
-        width:'80%',
-        height:50,
-        marginTop:20,
-        borderRadius:30
+    logo: {
+        position: 'absolute',
+        top: Constants.statusBarHeight + 100,
     },
-    button:{
-        width:'80%',
-        height:50,
-        borderRadius:25,
-        padding:10,
-        alignItems:'center',
-        justifyContent:'center'
-    }
+    decorator: {
+        width: '200%',
+        aspectRatio: 1,
+        borderRadius: 2000,
+        position: 'absolute',
+        top: '-30%',
+        zIndex: -1,
+        backgroundColor: '#3DA891',
+    },
+    loader: {
+        position: 'absolute',
+        zIndex: 2,
+        width: '100%',
+        height: '100%',
+        transform: [{ scale: 2 }]
+    },
+    title: {
+        fontFamily: 'Montserrat_600SemiBold',
+        fontSize: 24,
+        color: '#333',
+        textAlign: 'center',
+        marginBottom: 60,
+    },
+    textInput: {
+        flexGrow: 1,
+        maxWidth: '90%',
+        fontSize: 16,
+        fontFamily: 'Montserrat_400Regular',
+        borderBottomWidth: 2,
+        borderBottomColor: '#333',
+        padding: 10,
+    },
+    btnLogin: {
+        marginTop: 35,
+        padding: 20,
+        borderRadius: '100%',
+        backgroundColor: '#EFF396',
+    },
+    btnText: {
+        fontSize: 18,
+        fontFamily: 'Montserrat_600SemiBold',
+        textAlign: 'center',
+    },
+    flexCenter: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginBottom: 35,
+    },
+    version: {
+        fontFamily: 'Montserrat_600SemiBold',
+        color: 'rgba(0,0,0, 0.25)',
+        textAlign: 'center',
+        marginTop: 24,
+        marginBottom: '10%',
+    },
 });
 
 export default LoginForm;
