@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Animated, Image, ImageBackground, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Animated, Image, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 
 const Gallery = ({ evidence }) => {
     const scrollX = useRef(new Animated.Value(0)).current;

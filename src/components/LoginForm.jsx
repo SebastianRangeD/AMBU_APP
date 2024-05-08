@@ -1,20 +1,55 @@
 import React, { useState } from 'react';
 import Constants from 'expo-constants';
-import { TextInput, View, Text, Button, Alert, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import { TextInput, View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import Logo from '../../assets/img/logo.png';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { TouchableHighlight } from '@gorhom/bottom-sheet';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 
 const credentials = {
     user: 'admin',
     password: '123',
 };
 
+// Hardcoded user
+const user = {
+    uid: '1234-098u-98jb-bhj1',
+    name: 'Juan Estrada Rectángulo',
+    role: 'Agente',
+    area: 'Fauna y control animal',
+    park: 'Colomos',
+}
+
+const token = 'oi98-09pa-bhj1-oq10';
+
+const alert = (msg, type = 'success') => {
+    const titleDict = {
+        success: 'Éxito',
+        error: 'Error',
+        info: 'Notifición',
+
+    }
+
+    if (!msg) return;
+
+    return Toast.show({
+        type: type,
+        text1: titleDict[type],
+        text2: msg,
+    });
+}
+
 const Loading = ({ loading }) => {
-    if (!loading) return;
+    if (!loading)
+        return (
+            <Text style={styles.btnText}>
+                Iniciar Sesión
+            </Text>
+        );
 
     return (
-        <ActivityIndicator size={'large'} color={'#3DA891'} style={styles.loader} />
+        <ActivityIndicator size={'small'} color={'#333'} />
     );
 }
 
@@ -23,35 +58,31 @@ const LoginForm = ({ navigation }) => {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState('');
 
-    const alertLogin = () => {
+    const authLogin = async () => {
+        if (username !== credentials.user)
+            return alert('Usuario incorrecto', 'error');
+
+        if (password !== credentials.password)
+            return alert('Contraseña incorrecta', 'error');
+
         setLoading(true);
+        setTimeout(async () => { // simulated timeout when consuming API
+            await AsyncStorage.setItem('user', JSON.stringify(user));
+            await AsyncStorage.setItem('token', token);
 
-        if (username === credentials.user && password === credentials.password) {
-            Alert.alert('Inicio de sesion exitoso');
-            navigation.navigate('Layout');
-        } else if (username !== credentials.user && password !== credentials.password) {
-            Alert.alert('Inicio de sesion fallido: usuario y contraseña incorrectos');
-        } else if (username !== credentials.user) {
-            Alert.alert('Inicio de sesion fallido: usuario incorrecto');
-        } else {
-            Alert.alert('Inicio de sesion fallido: contraseña incorrecta');
-        }
-
-        setTimeout(() => { // simulated timeout when consuming API
             setLoading(false);
+            alert('Sesión iniciada correctamente');
+            navigation.navigate('Layout');
+
+            setUsername('');
+            setPassword('');
         }, 1000);
 
-        setUsername('');
-        setPassword('');
     };
 
     return (
         <View style={styles.container}>
             <View style={styles.decorator}></View>
-
-            <Loading loading={loading} />
-            {/* <ActivityIndicator size={'large'} color={'#3DA891'} style={styles.loader} /> */}
-
 
             <Image source={Logo} style={styles.logo} />
 
@@ -79,10 +110,8 @@ const LoginForm = ({ navigation }) => {
                         secureTextEntry={true} />
                 </View>
 
-                <TouchableHighlight onPress={alertLogin} style={styles.btnLogin} activeOpacity={1} underlayColor={'#DFE38B'}>
-                    <Text style={styles.btnText}>
-                        Iniciar Sesión
-                    </Text>
+                <TouchableHighlight onPress={authLogin} style={styles.btnLogin} activeOpacity={1} underlayColor={'#DFE38B'}>
+                    <Loading loading={loading} />
                 </TouchableHighlight>
             </View>
 
@@ -121,13 +150,6 @@ const styles = StyleSheet.create({
         zIndex: -1,
         backgroundColor: '#3DA891',
     },
-    loader: {
-        position: 'absolute',
-        zIndex: 2,
-        width: '100%',
-        height: '100%',
-        transform: [{ scale: 2 }]
-    },
     title: {
         fontFamily: 'Montserrat_600SemiBold',
         fontSize: 24,
@@ -153,6 +175,7 @@ const styles = StyleSheet.create({
     btnText: {
         fontSize: 18,
         fontFamily: 'Montserrat_600SemiBold',
+        color: '#333',
         textAlign: 'center',
     },
     flexCenter: {

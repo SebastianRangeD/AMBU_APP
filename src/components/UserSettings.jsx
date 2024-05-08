@@ -1,22 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from './User/Header';
-import { StyleSheet, Text, TouchableHighlight, View, Modal, Alert, TextInput, Switch } from 'react-native';
+import { StyleSheet, Text, TouchableHighlight, View, Modal, TextInput, Switch } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Camera } from 'expo-camera';
 import * as Location from 'expo-location';
 import Constants from 'expo-constants';
+import Toast from 'react-native-toast-message';
 
-// Hardcoded user
-const user = {
-    uid: '1234-098u-98jb-bhj1',
-    name: 'Juan Estrada Rectángulo',
-    role: 'Agente',
-    area: 'Fauna y control animal',
-    park: 'Colomos',
+const alert = (msg, type = 'success') => {
+    const titleDict = {
+        success: 'Éxito',
+        error: 'Error',
+        info: 'Notifición',
+
+    }
+
+    if (!msg) return;
+
+    return Toast.show({
+        type: type,
+        text1: titleDict[type],
+        text2: msg,
+    });
 }
-
-const token = 'oi98-09pa-bhj1-oq10';
 
 const UserSettings = ({ navigation }) => {
     //Changes password
@@ -27,46 +34,44 @@ const UserSettings = ({ navigation }) => {
     const [modalVisiblePermissions, setModalVisiblePermissions] = useState(false);
     const [cameraEnabled, setCameraEnabled] = useState(false);
     const [locationEnabled, setLocationEnabled] = useState(false);
+    // User info
+    const [user, setUser] = useState(null);
 
-    /* 
-        Esta funcion NO LA BORRES es solo para setear el token hardcodeado en cuanto se entra a la vista
-        pero se seteara al iniciar sesion de forma automatica. 
-    */
-    (async () => {
-        try {
-            await AsyncStorage.setItem('token', token);
-        } catch (e) {
-            console.error(e);
-        }
-    })();
+    useEffect(() => {
+        getUser();
+    }, []);
+
+    const getUser = async () => {
+        let userObj = await AsyncStorage.getItem('user');
+        userObj = JSON.parse(userObj);
+        setUser(userObj);
+    }
 
     const logout = async () => {
         try {
             await AsyncStorage.removeItem('token');
             await AsyncStorage.removeItem('user');
+            alert('Sesión cerrada correctamente');
             navigation.navigate('Login');
         } catch (error) {
-            console.error('Error al cerrar sesion', error);
+            alert(`Error al cerrar sesión: ${error}`, 'error');
         }
     }
 
     const changePassword = () => {
-        if (newPassword.trim() !== '' && confirmPassword.trim() !== '') {
-            if (newPassword === confirmPassword) {
-                Alert.alert('Cambio de Contraseña exitoso');
-                setNewPassword('');
-                setConfirmPassword('');
-                setModalVisiblePassword(false);
-            } else {
-                Alert.alert('Las contraseñas no coinciden', 'Vuelva a intentarlo');
-            }
-        } else if (newPassword.trim() === '') {
-            Alert.alert('Ingresa la nueva contraseña');
-        } else if (confirmPassword.trim() === '') {
-            Alert.alert('Ingresar la confirmación de la contraseña');
-        } else {
-            Alert.alert('Debes llenar los campos anteriores');
-        }
+        setNewPassword(newPassword.trim());
+        setConfirmPassword(confirmPassword.trim());
+
+        if (!newPassword || !confirmPassword)
+            return alert('Por favor llener todos los campos', 'error');
+
+        if (newPassword !== confirmPassword)
+            return alert('Las contraseñas no coinciden. Vuelva a intentarlo', 'error');
+
+        alert('Cambio de contraseña realizado');
+        setModalVisiblePassword(false);
+        setNewPassword('');
+        setConfirmPassword('');
     };
 
     const cameraPermission = async () => {
@@ -232,7 +237,7 @@ const styles = StyleSheet.create({
     },
     containerModal: {
         flexGrow: 1,
-        marginTop: Constants.statusBarHeight + 20,
+        marginTop: Constants.statusBarHeight + 100,
         backgroundColor: 'white',
         borderRadius: 20,
         padding: 20,
