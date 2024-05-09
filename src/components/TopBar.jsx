@@ -4,12 +4,12 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 import Logo from '../../assets/img/topbar-logo.png';
 import { FontAwesome6 } from '@expo/vector-icons';
 
-const Search = ({ isActive }) => {
+const Filter = ({ isActive }) => {
     if (!isActive) return;
 
     return (
         <Text style={styles.options}>
-            <FontAwesome6 name="magnifying-glass" size={20} color="#fff" />
+            <FontAwesome6 name="filter" size={20} color="#fff" />
         </Text>
     );
 }
@@ -20,11 +20,7 @@ const TopBar = ({ searchActive = false }) => {
             <Image source={Logo} style={styles.logo} />
 
             <View style={styles.flexRow}>
-                <Search isActive={searchActive} />
-
-                <Text style={styles.options}>
-                    <FontAwesome6 name="bell" size={20} color="#fff" />
-                </Text>
+                <Filter isActive={searchActive} />
             </View>
         </View>
     );

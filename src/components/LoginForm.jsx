@@ -6,22 +6,25 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { TouchableHighlight } from '@gorhom/bottom-sheet';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
+import axios from 'axios';
 
-const credentials = {
-    user: 'admin',
-    password: '123',
-};
+const API_URL = 'http://3.91.151.179:3000/api';
+
+// const credentials = {
+//     user: 'admin',
+//     password: '123',
+// };
 
 // Hardcoded user
-const user = {
-    uid: '1234-098u-98jb-bhj1',
-    name: 'Juan Estrada Rectángulo',
-    role: 'Agente',
-    area: 'Fauna y control animal',
-    park: 'Colomos',
-}
+// const user = {
+//     uid: '1234-098u-98jb-bhj1',
+//     name: 'Juan Estrada Rectángulo',
+//     role: 'Agente',
+//     area: 'Fauna y control animal',
+//     park: 'Colomos',
+// }
 
-const token = 'oi98-09pa-bhj1-oq10';
+// const token = 'oi98-09pa-bhj1-oq10';
 
 const alert = (msg, type = 'success') => {
     const titleDict = {
@@ -59,25 +62,42 @@ const LoginForm = ({ navigation }) => {
     const [loading, setLoading] = useState('');
 
     const authLogin = async () => {
-        if (username !== credentials.user)
-            return alert('Usuario incorrecto', 'error');
+        if (!password)
+            return alert('Ingrese una contraseña', 'error');
+        if (!username)
+            return alert('Ingrese un nombre de usuario', 'error');
+        // if (username.toLocaleLowerCase() !== credentials.user)
+        //     return alert('Usuario incorrecto', 'error');
 
-        if (password !== credentials.password)
-            return alert('Contraseña incorrecta', 'error');
+        // if (password !== credentials.password)
+        //     return alert('Contraseña incorrecta', 'error');
 
         setLoading(true);
-        setTimeout(async () => { // simulated timeout when consuming API
-            await AsyncStorage.setItem('user', JSON.stringify(user));
-            await AsyncStorage.setItem('token', token);
 
-            setLoading(false);
-            alert('Sesión iniciada correctamente');
-            navigation.navigate('Layout');
+        const credentials = {
+            username: username,
+            password: password,
+        }
 
-            setUsername('');
-            setPassword('');
-        }, 1000);
+        const { data } = await axios
+            .post(`${API_URL}/session/login`, credentials)
+            .catch(({ response }) => {
+                const { data } = response;
 
+                if (response.status !== '500')
+                    alert(data.message, 'error');
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+
+        await AsyncStorage.setItem('user', data.user);
+        await AsyncStorage.setItem('token', data._id);
+        alert('Sesión iniciada correctamente');
+        navigation.navigate('Layout');
+
+        setUsername('');
+        setPassword('');
     };
 
     return (

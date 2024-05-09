@@ -6,7 +6,7 @@ const ticket = {
         creation: '12-04-2024',
         end: null,
     },
-    area: 'Fauna',
+    area: 'Fauna', // departament
     categorie: 'Especie en riesgo',
     status: 'Activo',
     priority: 'Alta',

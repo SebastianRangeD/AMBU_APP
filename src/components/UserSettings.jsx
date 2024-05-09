@@ -47,6 +47,7 @@ const UserSettings = ({ navigation }) => {
         setUser(userObj);
     }
 
+    // Add logout endpoint
     const logout = async () => {
         try {
             await AsyncStorage.removeItem('token');
